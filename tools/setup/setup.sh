@@ -49,11 +49,17 @@
 # Install dependencies in dependencies/generated_requirements/cuda12-requirements.txt
 ## bash tools/setup/setup.sh MODE=stable DEVICE=gpu
 
+# Install dependencies in dependencies/generated_requirements/cuda13-requirements.txt (CUDA 13.x, e.g. 13.1)
+## bash tools/setup/setup.sh MODE=stable DEVICE=gpu_cuda13
+
 # Install dependencies in dependencies/generated_requirements/cuda12-requirements.txt + specified jax, jaxlib, jax-cuda12-plugin, jax-cuda12-pjrt
 ## bash tools/setup/setup.sh MODE=stable DEVICE=gpu JAX_VERSION=0.4.13
 
 # Install dependencies in dependencies/generated_requirements/cuda12-requirements.txt + jax-nightly, jaxlib-nightly
 ## bash tools/setup/setup.sh MODE=nightly DEVICE=gpu
+
+# Install dependencies in dependencies/generated_requirements/cuda13-requirements.txt + jax[cuda13]
+## bash tools/setup/setup.sh MODE=nightly DEVICE=gpu_cuda13
 
 # Install dependencies in dependencies/generated_requirements/cuda12-requirements.txt + specified jax, jaxlib, jax-cuda12-plugin, jax-cuda12-pjrt
 ## bash tools/setup/setup.sh MODE=nightly DEVICE=gpu JAX_VERSION=0.4.36.dev20241109
@@ -186,13 +192,15 @@ install_custom_libtpu() {
 }
 
 install_maxtext_with_deps() {
-    if [[ "$DEVICE" != "tpu" && "$DEVICE" != "gpu" ]]; then
-      echo -e "\n\nError: DEVICE must be either 'tpu' or 'gpu'.\n\n"
+    if [[ "$DEVICE" != "tpu" && "$DEVICE" != "gpu" && "$DEVICE" != "gpu_cuda13" ]]; then
+      echo -e "\n\nError: DEVICE must be 'tpu', 'gpu', or 'gpu_cuda13'.\n\n"
       exit 1
     fi
     echo "Setting up MaxText in $MODE mode for $DEVICE device"
     if [ "$DEVICE" = "gpu" ]; then
         dep_name='dependencies/requirements/generated_requirements/cuda12-requirements.txt'
+    elif [ "$DEVICE" = "gpu_cuda13" ]; then
+        dep_name='dependencies/requirements/generated_requirements/cuda13-requirements.txt'
     else
         dep_name='dependencies/requirements/generated_requirements/tpu-requirements.txt'
     fi
@@ -235,6 +243,12 @@ if [[ "$MODE" == "stable" ]]; then
             version_mismatch_warning "jax"
             python3 -m uv pip install -U "jax[cuda12]==${JAX_VERSION}"
         fi
+    elif [[ $DEVICE == "gpu_cuda13" ]]; then
+        if [[ -n "$JAX_VERSION" ]]; then
+            echo -e "\nInstalling stable jax, jaxlib ${JAX_VERSION} (cuda13)"
+            version_mismatch_warning "jax"
+            python3 -m uv pip install -U "jax[cuda13]==${JAX_VERSION}"
+        fi
     fi
     exit 0
 fi
@@ -275,6 +289,16 @@ if [[ $MODE == "nightly" ]]; then
             echo -e "\nInstalling the latest jax-nightly, jaxlib-nightly"
             python3 -m uv pip install -U --pre --no-deps jax jaxlib \
                 jax-cuda12-plugin[with-cuda] jax-cuda12-pjrt -i https://us-python.pkg.dev/ml-oss-artifacts-published/jax/simple/
+        fi
+    elif [[ $DEVICE == "gpu_cuda13" ]]; then
+        if [[ -n "$JAX_VERSION" ]]; then
+            echo -e "\nInstalling jax-nightly, jaxlib-nightly ${JAX_VERSION} (cuda13)"
+            python3 -m uv pip install -U --pre --no-deps jax==${JAX_VERSION} jaxlib==${JAX_VERSION} \
+                jax-cuda13-pjrt==${JAX_VERSION} -i https://us-python.pkg.dev/ml-oss-artifacts-published/jax/simple/
+        else
+            echo -e "\nInstalling the latest jax-nightly, jaxlib-nightly (cuda13)"
+            python3 -m uv pip install -U --pre --no-deps jax jaxlib \
+                jax-cuda13-pjrt -i https://us-python.pkg.dev/ml-oss-artifacts-published/jax/simple/
         fi
     fi
     exit 0

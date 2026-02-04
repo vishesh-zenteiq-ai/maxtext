@@ -1,0 +1,524 @@
+(ml) vishesh@catanzaro:~/github/maxtext$ git diff .
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 13: use a Dockerfile that overrides BASE_IMAGE (see below) and pass DEVICE=cuda13.
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 13: use a Dockerfile that overrides BASE_IMAGE (see below) and pass DEVICE=cuda13.
++#
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 13: use a Dockerfile that overrides BASE_IMAGE (see below) and pass DEVICE=cuda13.
++#
++# Or with Python: `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t ...`
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 13: use a Dockerfile that overrides BASE_IMAGE (see below) and pass DEVICE=cuda13.
++#
++# Or with Python: `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t ...`
+ #
+:...skipping...
+diff --git a/.github/workflows/build_and_test_maxtext.yml b/.github/workflows/build_and_test_maxtext.yml
+index 9a2d778bb..e8d25389c 100644
+--- a/.github/workflows/build_and_test_maxtext.yml
++++ b/.github/workflows/build_and_test_maxtext.yml
+@@ -230,7 +230,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+@@ -251,7 +251,7 @@ jobs:
+         fail-fast: false
+         matrix:
+           image_type: ["py312"]
+-          cuda: ["cuda12"]
++          cuda: ["cuda12", "cuda13"]
+     with:
+       device_type: ${{ matrix.cuda }}
+       device_name: a100-40gb-4
+diff --git a/.github/workflows/run_tests_against_package.yml b/.github/workflows/run_tests_against_package.yml
+index 7ad07d1c1..a2b8685f6 100644
+--- a/.github/workflows/run_tests_against_package.yml
++++ b/.github/workflows/run_tests_against_package.yml
+@@ -111,8 +111,8 @@ jobs:
+           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
+           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
+           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
+-          # omit this libtpu init args for gpu tests
+-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
++          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
++          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
+             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
+           fi
+           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
+diff --git a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+index dffa6f11b..36e541721 100644
+--- a/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
++++ b/dependencies/dockerfiles/clean_py_env_gpu.Dockerfile
+@@ -5,22 +5,24 @@
+ # and uv installed.
+ #
+ # Build a docker image by running:
+-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+-# Or
+-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
++# CUDA 13: use a Dockerfile that overrides BASE_IMAGE (see below) and pass DEVICE=cuda13.
++#
++# Or with Python: `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t ...`
+ #
+ # How to upload the image to Google Container Registry (GCR):swscasccsca
+
+
+
+
+
+
+MY EXPERINCE TO MAKE THE BUILD IN Cu13 Nv Devices .:
+
+Step 1: Create a Python 3.12 env
+conda create -n maxtext-cuda13 python=3.12 -y
+conda activate maxtext-cuda13
+conda create -n maxtext-cuda13 python=3.12 -yconda activate maxtext-cuda13
+(or use a venv with Python 3.12.)
+Step 2: Install JAX with CUDA 13 support
+python -m pip install -U "jax[cuda13]"
+python -m pip install -U "jax[cuda13]"
+Verify:
+python -c "import jax; print(jax.devices())"
+# Should show at least one GpuDevice(...)
+python -c "import jax; print(jax.devices())"# Should show at least one GpuDevice(...)
+If this fails with cudaErrorInsufficientDriver, the driver on that box is still too old.
+Step 3: Install MaxText for CUDA 13
+From the MaxText repo root:
+python -m pip install uv
+
+# Editable install with CUDA 13 extra and pinned deps:
+UV_HTTP_TIMEOUT=600 uv pip install -e ".[cuda13]" --resolution=lowest
+install_maxtext_github_deps  # if you use the extras script
+python -m pip install uv# Editable install with CUDA 13 extra and pinned deps:UV_HTTP_TIMEOUT=600 uv pip install -e ".[cuda13]" --resolution=lowestinstall_maxtext_github_deps  # if you use the extras script
+If transformer-engine-jax fails to build due to missing cudnn.h, nccl.h, or nvToolsExt.h:
+python -m pip install nvidia-cudnn-cu13 nvidia-nccl-cu13
+
+# Only if headers aren’t in standard CUDA include dirs on that machine:
+export CUDNN_INCLUDE="$(python -c 'import nvidia.cudnn, os; print(os.path.join(os.path.dirname(nvidia.cudnn.__file__), \"include\"))')"
+export NCCL_INCLUDE="$CONDA_PREFIX/lib/python3.12/site-packages/nvidia/nccl/include"
+export NVTX_INCLUDE="/usr/local/cuda/include"  # or your nvtx3 include dir
+
+export CFLAGS="-I$CUDNN_INCLUDE -I$NCCL_INCLUDE -I$NVTX_INCLUDE ${CFLAGS:-}"
+export CPPFLAGS="-I$CUDNN_INCLUDE -I$NCCL_INCLUDE -I$NVTX_INCLUDE ${CPPFLAGS:-}"
+UV_HTTP_TIMEOUT=600 uv pip install -e ".[cuda13]" --resolution=lowest
+python -m pip install nvidia-cudnn-cu13 nvidia-nccl-cu13# Only if headers aren’t in standard CUDA include dirs on that machine:export CUDNN_INCLUDE="$(python -c 'import nvidia.cudnn, os; print(os.path.join(os.path.dirname(nvidia.cudnn.__file__), \"include\"))')"export NCCL_INCLUDE="$CONDA_PREFIX/lib/python3.12/site-packages/nvidia/nccl/include"export NVTX_INCLUDE="/usr/local/cuda/include"  # or your nvtx3 include direxport CFLAGS="-I$CUDNN_INCLUDE -I$NCCL_INCLUDE -I$NVTX_INCLUDE ${CFLAGS:-}"export CPPFLAGS="-I$CUDNN_INCLUDE -I$NCCL_INCLUDE -I$NVTX_INCLUDE ${CPPFLAGS:-}"UV_HTTP_TIMEOUT=600 uv pip install -e ".[cuda13]" --resolution=lowest
+(If that machine already has CUDA 13 + cuDNN/NCCL dev packages installed under /usr/local/cuda, you typically won’t need these extra flags.)
+Step 4: Run MaxText on CUDA 13
+Quick smoke test:
+cd ~/github/maxtext  # repo root
+python -c "import MaxText; print(MaxText.__version__)"
+python -c "import jax; print(jax.devices())"  # confirm GPUs
+
+python -m MaxText.train \
+  src/MaxText/configs/base.yml \
+  hardware=gpu \
+  dataset_type=synthetic \
+  steps=1 \
+  base_output_directory=/tmp/maxtext_cuda13_test \
+  enable_checkpointing=false
+cd ~/github/maxtext  # repo rootpython -c "import MaxText; print(MaxText.__version__)
+"python -c "import jax; print(jax.devices())"  # confirm GPUspython -m MaxText.train \  
+src/MaxText/configs/base.yml \  
+hardware=gpu \  
+dataset_type=synthetic \  
+steps=1 \  
+base_output_directory=/tmp/maxtext_cuda13_test \  
+enable_checkpointing=false
+
+If that runs without CUDA / Pallas errors and jax.devices() shows GpuDevice(...), 
+then on that device MaxText and JAX are using CUDA 13 exactly the way they used CUDA 12.
+
+
+EOD

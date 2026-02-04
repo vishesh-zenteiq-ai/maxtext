@@ -53,12 +53,16 @@ source maxtext_venv/bin/activate
 # 3. Install dependencies in editable mode
 # install the tpu package
 uv pip install -e .[tpu] --resolution=lowest
-# or install the gpu package by running the following line
+# or install the gpu package (CUDA 12):
 # uv pip install -e .[cuda12] --resolution=lowest
+# or for CUDA 13.x (e.g. 13.1):
+# uv pip install -e .[cuda13] --resolution=lowest
 install_maxtext_github_deps
 ```
 
 After installation, you can verify the package is available with `python3 -c "import MaxText"` and run training jobs with `python3 -m MaxText.train ...`.
+
+For GPU with **CUDA 13.x** (e.g. 13.1), use the `cuda13` extra or the setup script with `DEVICE=gpu_cuda13`: `uv pip install -e .[cuda13] --resolution=lowest` or `bash tools/setup/setup.sh MODE=stable DEVICE=gpu_cuda13`. Driver and system CUDA 13.1 are expected; the stack uses JAX CUDA 13 (jax-cuda13-pjrt) and NVIDIA/Transformer Engine CUDA 13 wheels. If `transformer-engine-jax` builds from source and fails on missing headers (`cudnn.h`, `nccl.h`, or `nvtx3/nvToolsExt.h`), install `nvidia-cudnn-cu13` and `nvidia-nccl-cu13` (e.g. `pip install nvidia-cudnn-cu13 nvidia-nccl-cu13`), then set include paths so the build can find them: set `CUDNN_INCLUDE` and `NCCL_INCLUDE` to the `include` dirs under `site-packages/nvidia/cudnn` and `nvidia/nccl`; if NVTX is needed, set `NVTX_INCLUDE` to the directory that contains the `nvtx3` subdir (e.g. under CUDA or nsight-compute). Then `export CFLAGS="-I$CUDNN_INCLUDE -I$NCCL_INCLUDE -I$NVTX_INCLUDE $CFLAGS"` and same for `CPPFLAGS` before running the install.
 
 # Update MaxText dependencies
 

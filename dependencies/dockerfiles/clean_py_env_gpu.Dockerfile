@@ -5,22 +5,24 @@
 # and uv installed.
 #
 # Build a docker image by running:
-# `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
-# Or
-# `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+# CUDA 12: `docker build --build-arg DEVICE=cuda12 -t <docker_image_name>:<tag> -f clean_py_env_gpu.Dockerfile .`
+# CUDA 13: use a Dockerfile that overrides BASE_IMAGE (see below) and pass DEVICE=cuda13.
+#
+# Or with Python: `docker build --build-arg PYTHON_VERSION=3.11 --build-arg DEVICE=cuda12 -t ...`
 #
 # How to upload the image to Google Container Registry (GCR):
 # e.g., DEVICE=cuda12 and PYTHON_VERSION=3.12
-#.  gcloud init
 #   gcloud auth configure-docker
 #   docker tag <docker_image_name>:<tag> gcr.io/tpu-prod-env-multipod/maxtext-unit-test-cuda12:py312
 #   docker push gcr.io/tpu-prod-env-multipod/maxtext-unit-test-cuda12:py312
+# For cuda13: tag as maxtext-unit-test-cuda13:py312 and push.
 
 # Default to Python 3.12.
 ARG PYTHON_VERSION=3.12
 
 FROM nvcr.io/nvidia/cuda-dl-base:25.06-cuda12.9-devel-ubuntu24.04
-# TODO: enable cuda 13, e.g., nvcr.io/nvidia/cuda-dl-base:25.08-cuda13.0-devel-ubuntu24.04.
+# For a CUDA 13 unit-test image, use a copy of this Dockerfile with FROM set to a cuda13 base
+# (e.g. nvcr.io/nvidia/cuda-dl-base:25.08-cuda13.0-devel-ubuntu24.04) and build with DEVICE=cuda13.
 
 # Set the working directory in the container
 WORKDIR /maxtext

@@ -111,8 +111,8 @@ jobs:
           export MAXTEXT_ASSETS_ROOT=$(pwd)/src/maxtext/assets
           export MAXTEXT_TEST_ASSETS_ROOT=$(pwd)/tests/assets
           export MAXTEXT_PKG_DIR=$(pwd)/src/MaxText
-          # omit this libtpu init args for gpu tests
-          if [ "${{ inputs.device_type }}" != "cuda12" ]; then
+          # omit this libtpu init args for gpu tests (cuda12 / cuda13)
+          if [ "${{ inputs.device_type }}" != "cuda12" ] && [ "${{ inputs.device_type }}" != "cuda13" ]; then
             export LIBTPU_INIT_ARGS='--xla_tpu_scoped_vmem_limit_kib=65536'
           fi
           if [ "${{ inputs.total_workers }}" -gt 1 ]; then
