@@ -739,6 +739,10 @@ class HardwareAndMesh(BaseModel):
   enable_nnx: bool = Field(False, description="Whether to use NNX for model definition.")
   optimize_mesh_for_tpu_v6e: bool = Field(False, description="Apply transformations to the mesh for TPU v6e.")
   shardy: bool = Field(True, description="Whether to use shardy XLA backend.")
+  use_transformer_engine: bool = Field(
+      True,
+      description="Use NVIDIA Transformer Engine on GPU when available. Set False if TE fails to load (e.g. CUDA/driver ABI mismatch).",
+  )
 
 
 class LayoutAndSharding(BaseModel):
@@ -2225,6 +2229,11 @@ class MaxTextConfig(
         raise ValueError(
             "Ring context parallelism strategy (context_parallel_strategy='ring') is only supported on GPUs."
         )
+    if not self.use_transformer_engine and self.attention == "cudnn_flash_te":
+      raise ValueError(
+          "use_transformer_engine is False but attention is cudnn_flash_te. "
+          "Set attention to e.g. 'cudnn_flash' or 'flash' when disabling Transformer Engine."
+      )
     if self.hardware == "gpu" and self.packing and self.attention == "cudnn_flash_te" and self.max_segments_per_seq <= 0:
       raise ValueError("max_segments_per_seq must be set when using TransformerEngine attention and packing")
     dcn_product = (

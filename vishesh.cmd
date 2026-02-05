@@ -42,3 +42,12 @@ python -m MaxText.train \
   base_output_directory=/tmp/maxtext_cuda13_test \
   enable_checkpointing=false
 
+
+
+
+
+import error , this is just a sample train cmd:
+python3 -m MaxText.train MaxText/configs/base.yml     run_name=llama_tinystories_run     base_output_directory=/home/parani/arnav/output
+     model_name=qwen3-0.6b     dataset_type=hf     hf_path=roneneldan/TinyStories     train_data_columns="['text']"     hardware=gpu     attention=dot_product     tokenizer_path="/home/parani/arnav/Qwen" 
+    tokenizer_type=huggingface                                                                                                                                                                              │
+                                                                       

@@ -1035,8 +1035,8 @@ def print_non_trivial_mesh_axis(mesh):
 
 @contextmanager
 def maybe_get_transformer_engine_context(config):
-  """Runs a transformer engine context engine manager for GPUs only."""
-  if config.hardware in ["gpu", "gpu_multiprocess"]:
+  """Runs a transformer engine context manager for GPUs only when enabled."""
+  if config.hardware in ["gpu", "gpu_multiprocess"] and getattr(config, "use_transformer_engine", True):
     with transformer_engine_context():
       yield
   else:
