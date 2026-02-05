@@ -48,7 +48,15 @@ def get_datasets(
     dataset_path=None,
 ):
   """Load a TFDS dataset."""
-  ds_builder = tfds.builder(dataset_name, data_dir=dataset_path)
+  ds_builder = tfds.builder(dataset_name, data_dir=dataset_path or None)
+  if not ds_builder.info.splits:
+    ds_builder.download_and_prepare()
+  if not ds_builder.info.splits:
+    raise ValueError(
+        f"Dataset {dataset_name} has no splits after download_and_prepare. "
+        "Pre-generate it (e.g. python -c \"import tensorflow_datasets as tfds; "
+        f"tfds.builder('{dataset_name}').download_and_prepare()\") or use dataset_type=synthetic."
+    )
 
   if shuffle_files:
     read_config = tfds.ReadConfig(shuffle_seed=shuffle_seed)
